@@ -1,30 +1,27 @@
 from schema.records import record
 
-
-#Searchs for records (albums) using the authenticated spotifyt client (sp).
-#The spotify client will utilize the query and output 'limit' number of relative records.
-def search_records(sp, query, lim):
-    results = sp.search(q = query, type = 'album', limit = lim) #completes search
+def search_ALBUMS_by_artists(sp, query, artist_lim):
+    artist_results = sp.search(q = query, type = "artist", limit = artist_lim)
     records = []
 
-    for item in results['albums']['items']:
-        album_data = {
-            "name": item["name"],
-            "release_date": item["release_date"],
-            "total_tracks": item["total_tracks"],
-            "artist_genre": "Unknown"
+    for artist in artist_results["artists"]["items"]:
+        artist_id = artist["id"]
+        artist_name = artist["name"]
+        artist_genres = artist.get("genres", [])
+
+        albums = sp.artist_albums(artist_id, album_type = "album", limit = 1)
+        if albums["items"]:
+            album = albums["items"][0]
+            album_data = {
+                "name": album["name"],
+                "release_date": album["release_date"],
+                "total_tracks": album["total_tracks"],
+                "artist_genre": artist_genres[0] if artist_genres else "Unknown",
+                "artist_name": artist_name,
+                "artist_id": artist_id
             }
-        
-        #Getting Genre
-        artist_id = item["artists"][0]["id"] #gets actual artist id assigned by spotify
-        artist_info = sp.artist(artist_id)   #gets info about artists of record using acutal spotify assigned artist_id
-        genres = artist_info.get("genres", [])
-        if genres: #check genres is populated
-            album_data["artist_genre"] = genres[0]
 
-        r = record(album_data) #creates a instant of the found data for a record 
-        r.artist_id = artist_id
-        records.append(r)
-
+            r = record(album_data)
+            r.artist_id = artist_id
+            records.append(r)
     return records
-

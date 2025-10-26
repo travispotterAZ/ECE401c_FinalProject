@@ -14,10 +14,13 @@ git config --global user.email "travispotter@arizona.edu"
     4a) git add .
 
 5) Commit Files
-    5a) git commit -m "Initial commit"
+    5a) git commit -m "COMMIT COMMENT"
 
 Linking Local Repo to GitHub)
 git remote add origin https://github.com/travispotterAZ/ECE401c_FinalProject.git
+
+
+Check Link) git remote -v
 
 Make terminal master)
 git push -u origin master
